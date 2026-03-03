@@ -1,0 +1,900 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Burned Out? / 废了么 API",
+    "description": "RESTful API for the Burned Out? (废了么) anonymous burnout tracking app. Built on Supabase Edge Functions + PostgreSQL.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "BurnedOut Team"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{project_ref}.supabase.co/functions/v1",
+      "description": "Supabase Edge Functions (Production)",
+      "variables": {
+        "project_ref": {
+          "default": "your-project-ref",
+          "description": "Supabase project reference ID"
+        }
+      }
+    },
+    {
+      "url": "http://localhost:54321/functions/v1",
+      "description": "Supabase Local Development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Anonymous user registration & profile (device-based, no sign-up required)"
+    },
+    {
+      "name": "Check-ins",
+      "description": "Daily burnout level check-in (5-level scale, one per day)"
+    },
+    {
+      "name": "Vents",
+      "description": "Vent Bin - record anonymous venting (only char count stored, content never persisted)"
+    },
+    {
+      "name": "Dashboard",
+      "description": "Global & regional burnout aggregation statistics"
+    },
+    {
+      "name": "Quips",
+      "description": "Random humorous resonance quotes (共鸣语), culturally adapted per locale"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "AnonKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey",
+        "description": "Supabase anon/public API key"
+      },
+      "DeviceAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Device-ID",
+        "description": "Unique device identifier (UUID v4) for anonymous user identification"
+      }
+    },
+    "schemas": {
+      "Locale": {
+        "type": "string",
+        "enum": ["zh-CN", "en-GB"],
+        "description": "Supported locales: Simplified Chinese or British English"
+      },
+      "Region": {
+        "type": "string",
+        "enum": ["CN", "UK", "NORDIC", "OTHER"],
+        "description": "User region"
+      },
+      "BurnoutLevel": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5,
+        "description": "Burnout level: 1=还行(Surviving), 2=有点废(Meh), 3=很废(Burned), 4=彻底废了(Fried), 5=已灭(Gone)"
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User UUID (auto-generated)"
+          },
+          "device_id": {
+            "type": "string",
+            "description": "Unique device identifier"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "device_id", "locale", "region", "created_at"]
+      },
+      "CheckIn": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "level": {
+            "$ref": "#/components/schemas/BurnoutLevel"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Check-in date (YYYY-MM-DD)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "user_id", "level", "date", "created_at"]
+      },
+      "VentLog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "char_count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Character count of the vented text (content itself is NEVER stored)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "user_id", "char_count", "created_at"]
+      },
+      "VentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "char_count": {
+            "type": "integer"
+          },
+          "quip": {
+            "type": "string",
+            "description": "A random humorous resonance quote displayed after destruction animation"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "char_count", "quip", "created_at"]
+      },
+      "GlobalStats": {
+        "type": "object",
+        "properties": {
+          "total_users": {
+            "type": "integer",
+            "description": "Total registered anonymous users"
+          },
+          "today_check_ins": {
+            "type": "integer",
+            "description": "Number of check-ins today"
+          },
+          "today_vents": {
+            "type": "integer",
+            "description": "Number of vents today"
+          },
+          "avg_level": {
+            "type": "number",
+            "format": "float",
+            "description": "Average burnout level today (1.0 - 5.0)"
+          },
+          "level_distribution": {
+            "$ref": "#/components/schemas/LevelDistribution"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of this snapshot"
+          }
+        },
+        "required": ["total_users", "today_check_ins", "today_vents", "avg_level", "level_distribution", "updated_at"]
+      },
+      "RegionalStats": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "today_check_ins": {
+            "type": "integer"
+          },
+          "today_vents": {
+            "type": "integer"
+          },
+          "avg_level": {
+            "type": "number",
+            "format": "float"
+          },
+          "level_distribution": {
+            "$ref": "#/components/schemas/LevelDistribution"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["region", "today_check_ins", "today_vents", "avg_level", "level_distribution", "updated_at"]
+      },
+      "LevelDistribution": {
+        "type": "object",
+        "description": "Count of users at each burnout level today",
+        "properties": {
+          "1": { "type": "integer", "description": "还行 / Surviving" },
+          "2": { "type": "integer", "description": "有点废 / Meh" },
+          "3": { "type": "integer", "description": "很废 / Burned" },
+          "4": { "type": "integer", "description": "彻底废了 / Fried" },
+          "5": { "type": "integer", "description": "已灭 / Gone" }
+        },
+        "required": ["1", "2", "3", "4", "5"]
+      },
+      "Quip": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string",
+            "description": "The resonance quote text"
+          },
+          "locale": {
+            "$ref": "#/components/schemas/Locale"
+          }
+        },
+        "required": ["id", "text", "locale"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          }
+        },
+        "required": ["error", "message"]
+      },
+      "PaginatedCheckIns": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CheckIn" }
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of check-in records for this user"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        },
+        "required": ["data", "total", "limit", "offset"]
+      }
+    },
+    "parameters": {
+      "DeviceIdHeader": {
+        "name": "X-Device-ID",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "Device unique identifier (UUID v4)"
+      },
+      "LocaleQuery": {
+        "name": "locale",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/Locale"
+        },
+        "description": "Preferred locale (defaults to user's locale setting)"
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid API key / Device ID",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" },
+            "example": {
+              "error": "UNAUTHORIZED",
+              "message": "Missing or invalid X-Device-ID header"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" },
+            "example": {
+              "error": "NOT_FOUND",
+              "message": "Resource not found"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Request validation failed",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" },
+            "example": {
+              "error": "VALIDATION_ERROR",
+              "message": "Invalid request parameters"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    { "AnonKey": [] },
+    { "DeviceAuth": [] }
+  ],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "operationId": "registerUser",
+        "summary": "Register anonymous user",
+        "description": "Register a new anonymous user by device ID. If the device_id already exists, returns the existing user (idempotent). No email/password required.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "device_id": {
+                    "type": "string",
+                    "description": "Unique device identifier (UUID v4 recommended)"
+                  },
+                  "locale": {
+                    "$ref": "#/components/schemas/Locale"
+                  },
+                  "region": {
+                    "$ref": "#/components/schemas/Region"
+                  }
+                },
+                "required": ["device_id", "locale", "region"]
+              },
+              "example": {
+                "device_id": "550e8400-e29b-41d4-a716-446655440000",
+                "locale": "zh-CN",
+                "region": "CN"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Existing user returned (device_id already registered)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" },
+                "example": {
+                  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                  "device_id": "550e8400-e29b-41d4-a716-446655440000",
+                  "locale": "zh-CN",
+                  "region": "CN",
+                  "created_at": "2026-03-01T08:00:00Z"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New user created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" },
+                "example": {
+                  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                  "device_id": "550e8400-e29b-41d4-a716-446655440000",
+                  "locale": "zh-CN",
+                  "region": "CN",
+                  "created_at": "2026-03-02T10:30:00Z"
+                }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "tags": ["Users"],
+        "operationId": "getUserProfile",
+        "summary": "Get current user profile",
+        "description": "Retrieve the profile of the current anonymous user by device ID.",
+        "parameters": [
+          { "$ref": "#/components/parameters/DeviceIdHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "operationId": "updateUserProfile",
+        "summary": "Update user profile",
+        "description": "Update locale or region for the current anonymous user.",
+        "parameters": [
+          { "$ref": "#/components/parameters/DeviceIdHeader" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "locale": { "$ref": "#/components/schemas/Locale" },
+                  "region": { "$ref": "#/components/schemas/Region" }
+                },
+                "minProperties": 1
+              },
+              "example": {
+                "locale": "en-GB",
+                "region": "UK"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/check-ins": {
+      "post": {
+        "tags": ["Check-ins"],
+        "operationId": "createCheckIn",
+        "summary": "Submit daily burnout check-in",
+        "description": "Submit today's burnout level (1-5). Each user can only check in once per day. If already checked in today, returns 409 Conflict.",
+        "parameters": [
+          { "$ref": "#/components/parameters/DeviceIdHeader" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "$ref": "#/components/schemas/BurnoutLevel"
+                  }
+                },
+                "required": ["level"]
+              },
+              "example": {
+                "level": 3
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Check-in created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CheckIn" },
+                "example": {
+                  "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                  "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                  "level": 3,
+                  "date": "2026-03-02",
+                  "created_at": "2026-03-02T14:30:00Z"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "409": {
+            "description": "Already checked in today",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "example": {
+                  "error": "ALREADY_CHECKED_IN",
+                  "message": "You have already checked in today. Come back tomorrow!"
+                }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/check-ins/today": {
+      "get": {
+        "tags": ["Check-ins"],
+        "operationId": "getTodayCheckIn",
+        "summary": "Get today's check-in",
+        "description": "Retrieve the current user's check-in for today. Returns 404 if not yet checked in.",
+        "parameters": [
+          { "$ref": "#/components/parameters/DeviceIdHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Today's check-in",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CheckIn" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": {
+            "description": "No check-in today yet",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "example": {
+                  "error": "NOT_CHECKED_IN",
+                  "message": "You haven't checked in today yet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/check-ins/history": {
+      "get": {
+        "tags": ["Check-ins"],
+        "operationId": "getCheckInHistory",
+        "summary": "Get check-in history",
+        "description": "Retrieve the current user's check-in history with pagination, ordered by date descending.",
+        "parameters": [
+          { "$ref": "#/components/parameters/DeviceIdHeader" },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            },
+            "description": "Number of records per page"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Offset for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated check-in history",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaginatedCheckIns" },
+                "example": {
+                  "data": [
+                    {
+                      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                      "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "level": 3,
+                      "date": "2026-03-02",
+                      "created_at": "2026-03-02T14:30:00Z"
+                    },
+                    {
+                      "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "user_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "level": 4,
+                      "date": "2026-03-01",
+                      "created_at": "2026-03-01T09:15:00Z"
+                    }
+                  ],
+                  "total": 15,
+                  "limit": 30,
+                  "offset": 0
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/vents": {
+      "post": {
+        "tags": ["Vents"],
+        "operationId": "createVent",
+        "summary": "Record a vent",
+        "description": "Record an anonymous vent. ONLY the character count is stored - the actual vent content is NEVER persisted or transmitted. Returns a random humorous quip as post-destruction feedback.",
+        "parameters": [
+          { "$ref": "#/components/parameters/DeviceIdHeader" },
+          { "$ref": "#/components/parameters/LocaleQuery" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "char_count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Character count of the vented text. The client must count characters locally and send ONLY this number."
+                  }
+                },
+                "required": ["char_count"]
+              },
+              "example": {
+                "char_count": 256
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vent recorded, destruction quip returned",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VentResponse" },
+                "examples": {
+                  "zh-CN": {
+                    "summary": "Chinese quip response",
+                    "value": {
+                      "id": "d4e5f6a7-b8c9-0123-def0-1234567890ab",
+                      "char_count": 256,
+                      "quip": "256个字的怨念已化为灰烬。宇宙收到了。",
+                      "created_at": "2026-03-02T15:00:00Z"
+                    }
+                  },
+                  "en-GB": {
+                    "summary": "English quip response",
+                    "value": {
+                      "id": "d4e5f6a7-b8c9-0123-def0-1234567890ab",
+                      "char_count": 256,
+                      "quip": "256 characters of pure rage, incinerated. The void acknowledges you.",
+                      "created_at": "2026-03-02T15:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/dashboard/global": {
+      "get": {
+        "tags": ["Dashboard"],
+        "operationId": "getGlobalStats",
+        "summary": "Get global burnout statistics",
+        "description": "Retrieve aggregated global burnout statistics for today. Includes total users, check-in count, average level, level distribution, and vent count. Data may be cached (up to 60s staleness via Redis).",
+        "responses": {
+          "200": {
+            "description": "Global statistics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GlobalStats" },
+                "example": {
+                  "total_users": 12580,
+                  "today_check_ins": 3842,
+                  "today_vents": 1567,
+                  "avg_level": 3.2,
+                  "level_distribution": {
+                    "1": 384,
+                    "2": 692,
+                    "3": 1153,
+                    "4": 998,
+                    "5": 615
+                  },
+                  "updated_at": "2026-03-02T15:00:00Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/regional": {
+      "get": {
+        "tags": ["Dashboard"],
+        "operationId": "getRegionalStats",
+        "summary": "Get regional burnout statistics",
+        "description": "Retrieve aggregated burnout statistics for a specific region today.",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Region"
+            },
+            "description": "Region to filter by"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Regional statistics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RegionalStats" },
+                "example": {
+                  "region": "CN",
+                  "today_check_ins": 2105,
+                  "today_vents": 890,
+                  "avg_level": 3.5,
+                  "level_distribution": {
+                    "1": 180,
+                    "2": 350,
+                    "3": 630,
+                    "4": 580,
+                    "5": 365
+                  },
+                  "updated_at": "2026-03-02T15:00:00Z"
+                }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/dashboard/all-regions": {
+      "get": {
+        "tags": ["Dashboard"],
+        "operationId": "getAllRegionalStats",
+        "summary": "Get all regions statistics",
+        "description": "Retrieve aggregated burnout statistics for ALL regions today. Useful for the Global Resonance Dashboard comparison view.",
+        "responses": {
+          "200": {
+            "description": "All regions statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "regions": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/RegionalStats" }
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": ["regions", "updated_at"]
+                },
+                "example": {
+                  "regions": [
+                    {
+                      "region": "CN",
+                      "today_check_ins": 2105,
+                      "today_vents": 890,
+                      "avg_level": 3.5,
+                      "level_distribution": { "1": 180, "2": 350, "3": 630, "4": 580, "5": 365 },
+                      "updated_at": "2026-03-02T15:00:00Z"
+                    },
+                    {
+                      "region": "UK",
+                      "today_check_ins": 1200,
+                      "today_vents": 500,
+                      "avg_level": 2.8,
+                      "level_distribution": { "1": 200, "2": 300, "3": 400, "4": 200, "5": 100 },
+                      "updated_at": "2026-03-02T15:00:00Z"
+                    }
+                  ],
+                  "updated_at": "2026-03-02T15:00:00Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quips/random": {
+      "get": {
+        "tags": ["Quips"],
+        "operationId": "getRandomQuip",
+        "summary": "Get a random resonance quip",
+        "description": "Retrieve a random humorous resonance quote (共鸣语), culturally adapted per locale. Used after vent destruction or as standalone mood content.",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Locale"
+            },
+            "description": "Locale for culturally adapted quips (defaults to zh-CN)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Random quip",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Quip" },
+                "examples": {
+                  "zh-CN": {
+                    "summary": "Chinese quip",
+                    "value": {
+                      "id": "e5f6a7b8-c9d0-1234-ef01-234567890abc",
+                      "text": "全球有37%的人和你一样废。你不孤单。",
+                      "locale": "zh-CN"
+                    }
+                  },
+                  "en-GB": {
+                    "summary": "English quip",
+                    "value": {
+                      "id": "f6a7b8c9-d0e1-2345-f012-34567890abcd",
+                      "text": "37% of humans are equally burned out right now. Solidarity.",
+                      "locale": "en-GB"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
