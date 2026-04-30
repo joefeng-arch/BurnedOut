@@ -79,6 +79,21 @@ const strings = {
     share_title: '我的废度',
     share_save: '长按保存图片',
     share_share: '分享给朋友',
+
+    // Smash plates
+    home_smash: '摔盘子 · 摇晃手机',
+    smash_title: '摔盘子',
+    smash_hint: '摇晃手机摔碎它',
+    smash_record: '今日记录 {n}',
+    smash_exhausted: '今日额度用完了',
+    smash_unlock_ad: '看广告 +20 个',
+    smash_unlock_maxed: '今日已解锁上限',
+    smash_done: '差不多了 →',
+    smash_sound_on: '🔊 音效已开',
+    smash_sound_off: '🔇 开音效',
+    smash_milestone_10: '热身完毕',
+    smash_milestone_50: '店家要破产了',
+    smash_milestone_100: '你今天可以了',
   },
   'en-GB': {
     app_name: 'You OK?',
@@ -148,6 +163,21 @@ const strings = {
     share_title: 'My burnout stats',
     share_save: 'Long press to save',
     share_share: 'Share with friends',
+
+    // Smash plates
+    home_smash: 'Smash plates · shake to play',
+    smash_title: 'Smash Plates',
+    smash_hint: 'Shake your phone hard',
+    smash_record: 'Today {n}',
+    smash_exhausted: "You're out of plates today",
+    smash_unlock_ad: 'Watch ad for 20 more',
+    smash_unlock_maxed: 'Max unlocks reached',
+    smash_done: 'Enough →',
+    smash_sound_on: '🔊 SFX on',
+    smash_sound_off: '🔇 Enable SFX',
+    smash_milestone_10: 'Warmed up',
+    smash_milestone_50: 'The shop is going bankrupt',
+    smash_milestone_100: 'You did good today',
   },
 };
 

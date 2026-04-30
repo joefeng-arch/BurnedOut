@@ -35,6 +35,7 @@ const AD_UNLOCK_TYPES = {
   WEEKLY_REPORT: 'weekly_report',
   SHARE_CARD: 'share_card',
   COMEBACK_TEMPLATE: 'comeback_template',
+  EXTRA_SMASH: 'extra_smash',
 };
 
 module.exports = {

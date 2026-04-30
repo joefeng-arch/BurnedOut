@@ -1,0 +1,162 @@
+.smash-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: calc(env(safe-area-inset-top, 0) + 60rpx);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 40rpx);
+  /* No scroll — entire page is one focused interaction */
+  overflow: hidden;
+}
+
+/* ---------- Counters ---------- */
+.counters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32rpx;
+  padding: 24rpx 32rpx;
+  margin: 0 auto 16rpx;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 2rpx solid rgba(255, 255, 255, 0.08);
+  border-radius: 24rpx;
+}
+.counter-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80rpx;
+}
+.counter-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.counter-num.warn { color: #ff3b30; }
+.counter-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4rpx;
+}
+.counter-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- Stage ---------- */
+.stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plate {
+  position: relative;
+  width: 360rpx;
+  height: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Idle: gentle floating animation so the plate feels alive, inviting a shake */
+  animation: plateIdle 2.4s ease-in-out infinite;
+  transition: transform 200ms ease-in, opacity 240ms ease-in;
+}
+.plate-emoji {
+  font-size: 280rpx;
+  line-height: 1;
+  filter: drop-shadow(0 0 40rpx rgba(255, 255, 255, 0.15));
+}
+@keyframes plateIdle {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12rpx) scale(1.02); }
+}
+/* Breaking: scale up briefly then collapse to nothing while rotating */
+.plate.breaking {
+  animation: none;
+  transform: scale(0) rotate(180deg);
+  opacity: 0;
+}
+
+/* ---------- Fragments ---------- */
+/* Each fragment uses CSS custom properties (--dx/--dy/--rot) so we can
+   randomize per-shake from JS without an unbounded class explosion. */
+.fragment {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36rpx;
+  height: 36rpx;
+  background: linear-gradient(135deg, #f5f5f5 0%, #d4d4d4 100%);
+  border-radius: 6rpx;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  /* Animate to the per-element offset, fading and rotating on the way */
+  animation: fragmentFly 600ms cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+@keyframes fragmentFly {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+/* ---------- Empty state ---------- */
+.plate-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  opacity: 0.6;
+}
+.plate-empty-emoji {
+  font-size: 200rpx;
+  line-height: 1;
+}
+.plate-empty-text {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Hint ---------- */
+.hint {
+  position: absolute;
+  bottom: 360rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16rpx 32rpx;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 32rpx;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* ---------- Actions ---------- */
+.actions {
+  padding: 0 48rpx;
+}
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24rpx;
+  padding: 0 8rpx;
+}
+.sound-toggle, .done-link {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 16rpx 24rpx;
+}

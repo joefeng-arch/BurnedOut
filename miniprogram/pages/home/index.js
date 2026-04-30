@@ -5,7 +5,7 @@ const { getTodayPhrase } = require('../../utils/daily-phrases.js');
 
 function buildT(locale) {
   const keys = [
-    'home_question', 'home_vent_now', 'home_checkin',
+    'home_question', 'home_vent_now', 'home_checkin', 'home_smash',
     'home_see_trend', 'home_privacy',
   ];
   const out = {};
@@ -40,6 +40,11 @@ Page({
   goCheckin() {
     analytics.events.click('home_click_checkin');
     wx.navigateTo({ url: '/pages/checkin/index' });
+  },
+
+  goSmash() {
+    analytics.events.click('home_click_smash');
+    wx.navigateTo({ url: '/pages/smash/index' });
   },
 
   goDashboard() {

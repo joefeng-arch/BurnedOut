@@ -1,0 +1,66 @@
+<view class="container smash-page">
+  <!-- Counter strip -->
+  <view class="counters fade-in">
+    <view class="counter-block">
+      <text class="counter-num">{{smashed}}</text>
+      <text class="counter-label">{{t.smash_smashed}}</text>
+    </view>
+    <view class="counter-divider"></view>
+    <view class="counter-block">
+      <text class="counter-num {{remaining === 0 ? 'warn' : ''}}">{{remaining}}</text>
+      <text class="counter-label">{{t.smash_remaining}}</text>
+    </view>
+    <view class="counter-divider"></view>
+    <view class="counter-block">
+      <text class="counter-num">{{record}}</text>
+      <text class="counter-label">⭐</text>
+    </view>
+  </view>
+
+  <!-- Plate stage -->
+  <view class="stage">
+    <!-- Living plate -->
+    <view class="plate {{plateState}}" wx:if="{{!exhausted}}">
+      <text class="plate-emoji">🍽️</text>
+    </view>
+
+    <!-- Exhausted state -->
+    <view class="plate-empty" wx:if="{{exhausted}}">
+      <text class="plate-empty-emoji">📦</text>
+      <text class="plate-empty-text">{{t.smash_exhausted}}</text>
+    </view>
+
+    <!-- Fragments — re-keyed every smash so CSS transition fires fresh -->
+    <view
+      wx:for="{{fragments}}"
+      wx:key="id"
+      class="fragment"
+      style="--dx: {{item.x}}rpx; --dy: {{item.y}}rpx; --rot: {{item.rot}}deg;">
+    </view>
+  </view>
+
+  <!-- Hint (first use) -->
+  <view class="hint fade-in" wx:if="{{showHint && !exhausted}}">
+    <text>👋 {{t.smash_hint}}</text>
+  </view>
+
+  <!-- Bottom actions -->
+  <view class="actions">
+    <button
+      wx:if="{{exhausted && canUnlock}}"
+      class="btn btn-primary full-width"
+      hover-class="btn-hover"
+      bindtap="onUnlockTap">
+      {{t.smash_unlock_ad}}
+    </button>
+
+    <view class="action-row">
+      <view class="sound-toggle" bindtap="toggleSound" hover-class="btn-hover">
+        <text>{{soundOn ? t.smash_sound_on : t.smash_sound_off}}</text>
+      </view>
+      <view class="done-link" bindtap="onDoneTap" hover-class="btn-hover">
+        <text>{{t.smash_done}}</text>
+      </view>
+    </view>
+  </view>
+</view>

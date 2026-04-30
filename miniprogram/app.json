@@ -5,6 +5,7 @@
     "pages/vent/index",
     "pages/destroy/index",
     "pages/result/index",
+    "pages/smash/index",
     "pages/dashboard/index",
     "pages/history/index",
     "pages/share/index"

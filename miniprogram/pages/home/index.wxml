@@ -33,6 +33,13 @@
       </button>
     </view>
 
+    <!-- Tertiary: shake-to-smash. Lower hierarchy than the two main CTAs but
+         still clearly tappable; the emoji + the "shake" hint make it obvious
+         this is a different kind of interaction. -->
+    <view class="smash-link" bindtap="goSmash" hover-class="btn-hover">
+      <text>🍽️ {{t.home_smash}}</text>
+    </view>
+
     <view class="secondary-link" bindtap="goDashboard">
       <text>{{t.home_see_trend}} →</text>
     </view>
