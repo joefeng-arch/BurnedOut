@@ -1,0 +1,45 @@
+<view class="container destroy-page {{stage}}">
+  <view class="anim-stage">
+    <!-- Shredder -->
+    <block wx:if="{{type === 'shredder'}}">
+      <view class="anim-shredder">
+        <view class="paper {{stage}}"></view>
+        <view class="shredder-body"></view>
+      </view>
+    </block>
+
+    <!-- Fire -->
+    <block wx:elif="{{type === 'fire'}}">
+      <view class="anim-fire">
+        <view class="flame {{stage}}">🔥</view>
+      </view>
+    </block>
+
+    <!-- Black hole -->
+    <block wx:elif="{{type === 'black_hole'}}">
+      <view class="anim-hole">
+        <view class="hole {{stage}}"></view>
+        <view class="hole-core {{stage}}"></view>
+      </view>
+    </block>
+
+    <!-- Garbage truck -->
+    <block wx:else>
+      <view class="anim-truck">
+        <view class="truck {{stage}}">🚛</view>
+      </view>
+    </block>
+  </view>
+
+  <view class="status-text fade-in">
+    <text>{{stage === 'done' ? t.destroy_done : t.destroy_processing}}</text>
+  </view>
+
+  <!-- Keyword egg overlay — surfaces only when a keyword matched. Animates
+       in on the 'done' stage so the surprise lands at the same beat as the
+       haptic medium-tap. -->
+  <view class="egg-caption {{stage === 'done' ? 'show' : ''}}" wx:if="{{eggCaption}}">
+    <text class="egg-emoji">{{eggEmoji}}</text>
+    <text class="egg-text">{{eggCaption}}</text>
+  </view>
+</view>

@@ -1,0 +1,47 @@
+<view class="container checkin-page">
+  <view class="title-row fade-in">
+    <text class="title">{{t.checkin_title}}</text>
+    <text class="body muted mt-16">{{t.checkin_subtitle}}</text>
+  </view>
+
+  <view wx:if="{{alreadyCheckedIn}}" class="locked-banner fade-in">
+    <text class="body">✓ {{t.checkin_already}}</text>
+  </view>
+
+  <view class="level-grid fade-in {{alreadyCheckedIn ? 'locked' : ''}}">
+    <view
+      wx:for="{{levels}}"
+      wx:key="value"
+      class="level-card {{selectedLevel === item.value ? 'active' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="pickLevel">
+      <text class="level-emoji">{{item.emoji}}</text>
+      <text class="level-label">{{item.label}}</text>
+    </view>
+  </view>
+
+  <view class="emotion-section fade-in {{alreadyCheckedIn ? 'locked' : ''}}" wx:if="{{selectedLevel}}">
+    <text class="subtitle">{{t.checkin_emotion}}</text>
+    <view class="chips mt-24">
+      <view
+        wx:for="{{emotionOptions}}"
+        wx:key="key"
+        class="chip {{selectedEmotions[item.key] ? 'active' : ''}}"
+        hover-class="chip-hover"
+        hover-stay-time="120"
+        data-key="{{item.key}}"
+        bindtap="toggleEmotion">
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <view class="cta-stack fade-in">
+    <button
+      class="btn btn-primary full-width"
+      bindtap="submit"
+      disabled="{{!alreadyCheckedIn && (!canSubmit || submitting)}}">
+      {{alreadyCheckedIn ? t.go_dashboard : (submitting ? '...' : t.checkin_submit)}}
+    </button>
+  </view>
+</view>

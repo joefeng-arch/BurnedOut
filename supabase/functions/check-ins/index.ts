@@ -1,144 +1,94 @@
+// Check-ins API
+// POST   /check-ins          — create today's check-in (1 per user per day)
+// GET    /check-ins/today    — today's check-in if exists
+// GET    /check-ins/history  — paginated history
+
 import { createAdminClient, getDeviceId, getUserByDeviceId } from "../_shared/supabase.ts";
-import {
-  handleCors,
-  jsonResponse,
-  errorResponse,
-} from "../_shared/cors.ts";
+import { handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+
+const EMOTION_TAGS = ["tired", "annoyed", "angry", "empty", "sad"] as const;
+type EmotionTag = typeof EMOTION_TAGS[number];
 
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
 
-  // --- Auth ---
   const deviceId = getDeviceId(req);
-  if (!deviceId) {
-    return errorResponse("UNAUTHORIZED", "Missing X-Device-ID header", 401);
-  }
+  if (!deviceId) return errorResponse("unauthorized", "X-Device-ID required", 401);
 
   const user = await getUserByDeviceId(deviceId);
-  if (!user) {
-    return errorResponse("UNAUTHORIZED", "User not found. Register first.", 401);
-  }
+  if (!user) return errorResponse("not_found", "User not registered", 404);
+
+  const url = new URL(req.url);
+  const path = url.pathname.split("/").filter(Boolean).pop() ?? "";
 
   const supabase = createAdminClient();
-  const url = new URL(req.url);
-  const path = url.pathname.split("/").pop(); // "check-ins", "today", "history"
 
-  // ============================================================
-  // POST /check-ins — Create today's check-in
-  // ============================================================
-  if (req.method === "POST" && (!path || path === "check-ins")) {
+  // POST /check-ins
+  if (req.method === "POST") {
+    let body: { burn_level?: number; emotion_tags?: string[] };
     try {
-      const body = await req.json();
-      const level = body.level;
-
-      // Validate level
-      if (!Number.isInteger(level) || level < 1 || level > 5) {
-        return errorResponse(
-          "VALIDATION_ERROR",
-          "level must be an integer between 1 and 5",
-          422,
-        );
-      }
-
-      // Check if already checked in today
-      const today = new Date().toISOString().split("T")[0];
-      const { data: existing } = await supabase
-        .from("check_ins")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("date", today)
-        .single();
-
-      if (existing) {
-        return errorResponse(
-          "ALREADY_CHECKED_IN",
-          "You have already checked in today. Come back tomorrow!",
-          409,
-        );
-      }
-
-      // Insert check-in
-      const { data, error } = await supabase
-        .from("check_ins")
-        .insert({ user_id: user.id, level, date: today })
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Insert check-in error:", error);
-        return errorResponse("INTERNAL_ERROR", "Failed to create check-in", 500);
-      }
-
-      return jsonResponse(data, 201);
-    } catch (err) {
-      console.error("check-ins POST error:", err);
-      return errorResponse("INTERNAL_ERROR", "Invalid request body", 400);
+      body = await req.json();
+    } catch {
+      return errorResponse("bad_request", "Invalid JSON", 400);
     }
+
+    if (!body.burn_level || body.burn_level < 1 || body.burn_level > 5) {
+      return errorResponse("bad_request", "burn_level must be 1-5", 400);
+    }
+
+    const tags = (body.emotion_tags ?? []).filter((t): t is EmotionTag =>
+      (EMOTION_TAGS as readonly string[]).includes(t)
+    );
+
+    const { data, error } = await supabase
+      .from("check_ins")
+      .insert({
+        user_id: user.id,
+        burn_level: body.burn_level,
+        emotion_tags: tags,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      // Unique violation = already checked in today
+      if (error.code === "23505") {
+        return errorResponse("conflict", "Already checked in today", 409);
+      }
+      console.error("check-ins insert failed", error);
+      return errorResponse("internal", error.message, 500);
+    }
+
+    // Compute streak on the fly
+    const { data: streakData } = await supabase.rpc("get_user_streak", { p_user_id: user.id });
+    return jsonResponse({ check_in: data, streak: streakData ?? 1 }, 201);
   }
 
-  // ============================================================
-  // GET /check-ins/today — Get today's check-in
-  // ============================================================
+  // GET /check-ins/today
   if (req.method === "GET" && path === "today") {
-    const today = new Date().toISOString().split("T")[0];
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("check_ins")
       .select("*")
       .eq("user_id", user.id)
-      .eq("date", today)
-      .single();
-
-    if (error || !data) {
-      return errorResponse(
-        "NOT_CHECKED_IN",
-        "You haven't checked in today yet",
-        404,
-      );
-    }
-
-    return jsonResponse(data);
+      .eq("date", new Date().toISOString().slice(0, 10))
+      .maybeSingle();
+    return jsonResponse({ check_in: data });
   }
 
-  // ============================================================
-  // GET /check-ins/history — Get paginated history
-  // ============================================================
+  // GET /check-ins/history?limit=&offset=
   if (req.method === "GET" && path === "history") {
-    const limit = Math.min(
-      Math.max(parseInt(url.searchParams.get("limit") || "30"), 1),
-      100,
-    );
-    const offset = Math.max(
-      parseInt(url.searchParams.get("offset") || "0"),
-      0,
-    );
-
-    // Get total count
-    const { count } = await supabase
-      .from("check_ins")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id);
-
-    // Get paginated data
+    const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "30"), 100);
+    const offset = parseInt(url.searchParams.get("offset") ?? "0");
     const { data, error } = await supabase
       .from("check_ins")
       .select("*")
       .eq("user_id", user.id)
       .order("date", { ascending: false })
       .range(offset, offset + limit - 1);
-
-    if (error) {
-      console.error("Check-in history error:", error);
-      return errorResponse("INTERNAL_ERROR", "Failed to fetch history", 500);
-    }
-
-    return jsonResponse({
-      data: data || [],
-      total: count || 0,
-      limit,
-      offset,
-    });
+    if (error) return errorResponse("internal", error.message, 500);
+    return jsonResponse({ check_ins: data ?? [], limit, offset });
   }
 
-  return errorResponse("METHOD_NOT_ALLOWED", "Method not allowed", 405);
+  return errorResponse("not_found", "Route not found", 404);
 });

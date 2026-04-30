@@ -1,0 +1,73 @@
+.history-page {
+  padding-top: 80rpx;
+  padding-bottom: 60rpx;
+  min-height: 100vh;
+}
+
+.title-row { margin-bottom: 40rpx; }
+
+.loading-row {
+  padding: 60rpx 0;
+  text-align: center;
+}
+
+.empty-state {
+  padding: 120rpx 0;
+  text-align: center;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx 28rpx;
+}
+
+.row-left {
+  flex: 0 0 auto;
+}
+
+.row-emoji {
+  font-size: 52rpx;
+  line-height: 1;
+}
+
+.row-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.row-date {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.row-level {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.row-emotions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.row-emotion-chip {
+  font-size: 22rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}

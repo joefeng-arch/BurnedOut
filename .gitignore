@@ -14,6 +14,12 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Claude Code local settings (per-developer; never commit)
+.claude/settings.local.json
+
+# WeChat dev tool per-machine state
+miniprogram/project.private.config.json
+
 # Supabase local
 supabase/.temp/
 

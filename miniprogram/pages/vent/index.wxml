@@ -1,0 +1,59 @@
+<view class="container vent-page">
+  <!-- Mode switch -->
+  <view class="mode-row">
+    <view
+      wx:for="{{modes}}"
+      wx:key="key"
+      class="chip {{selectedMode === item.key ? 'active' : ''}}"
+      hover-class="chip-hover"
+      hover-stay-time="120"
+      data-key="{{item.key}}"
+      bindtap="selectMode">
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- Emotion tags multi-select -->
+  <view class="emotion-row">
+    <view
+      wx:for="{{emotions}}"
+      wx:key="key"
+      class="chip {{selectedEmotions[item.key] ? 'active' : ''}}"
+      hover-class="chip-hover"
+      hover-stay-time="120"
+      data-key="{{item.key}}"
+      bindtap="toggleEmotion">
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- Textarea -->
+  <textarea
+    class="textarea"
+    placeholder="{{t.vent_placeholder}}"
+    placeholder-class="placeholder"
+    value="{{text}}"
+    bindinput="onInput"
+    maxlength="500"
+    auto-height="{{true}}"
+    adjust-position="{{true}}"
+    cursor-spacing="24"
+    show-confirm-bar="{{false}}" />
+
+  <view class="char-count">
+    <text class="caption">{{t.vent_chars}}</text>
+  </view>
+
+  <view class="warning caption">{{t.vent_warning}}</view>
+
+  <!-- CTA -->
+  <view class="cta-wrap">
+    <button
+      class="btn btn-primary full-width"
+      disabled="{{text.length === 0 || submitting}}"
+      bindtap="submit">
+      {{submitting ? '…' : t.vent_destroy}}
+    </button>
+    <view class="caption mt-16 text-center" wx:if="{{countHint}}">{{countHint}}</view>
+  </view>
+</view>

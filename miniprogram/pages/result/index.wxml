@@ -1,0 +1,30 @@
+<view class="container result-page">
+  <view class="title-row fade-in">
+    <text class="title">{{t.result_title}}</text>
+  </view>
+
+  <view class="card fade-in stats">
+    <view class="stats-row" wx:if="{{charCountLabel}}">
+      <text class="stat-label muted">{{statsLabels.chars}}</text>
+      <text class="stat-value">{{charCountLabel}}</text>
+    </view>
+    <view class="stats-row" wx:if="{{emotionLabel}}">
+      <text class="stat-label muted">{{statsLabels.mood}}</text>
+      <text class="stat-value">{{emotionLabel}}</text>
+    </view>
+  </view>
+
+  <view class="quip fade-in">
+    <text>{{quip}}</text>
+  </view>
+
+  <view class="cta-stack fade-in">
+    <button class="btn btn-primary full-width" bindtap="retry">{{t.result_retry}}</button>
+    <button class="btn btn-secondary full-width mt-24" bindtap="goDashboard">{{t.result_dashboard}}</button>
+    <button class="btn btn-ghost full-width mt-24" bindtap="unlockPremium">{{t.result_unlock}}</button>
+  </view>
+
+  <view class="back-row" bindtap="backHome">
+    <text class="caption">← {{t.result_back_home}}</text>
+  </view>
+</view>

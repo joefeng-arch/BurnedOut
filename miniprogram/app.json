@@ -1,13 +1,29 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/home/index",
+    "pages/checkin/index",
+    "pages/vent/index",
+    "pages/destroy/index",
+    "pages/result/index",
+    "pages/dashboard/index",
+    "pages/history/index",
+    "pages/share/index"
   ],
   "window": {
-    "navigationBarTitleText": "废了么",
+    "navigationBarTitleText": "还好吗",
     "navigationBarBackgroundColor": "#0a0a0a",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#0a0a0a"
+    "backgroundColor": "#0a0a0a",
+    "backgroundTextStyle": "light"
   },
+  "permission": {
+    "scope.writePhotosAlbum": {
+      "desc": "保存你的废度分享图到相册"
+    }
+  },
+  "requiredPrivateInfos": [],
+  "__usePrivacyCheck__": true,
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }

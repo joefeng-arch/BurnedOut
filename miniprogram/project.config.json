@@ -1,5 +1,5 @@
 {
-  "description": "废了么 / Burned Out?",
+  "description": "还好吗-情绪发泄器 / You OK?",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -31,11 +31,19 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "compileWorklet": false,
+    "localPlugins": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
-  "libVersion": "3.3.4",
+  "libVersion": "3.14.3",
   "appid": "wxe657793473769f5a",
-  "projectname": "burned-out",
-  "condition": {}
+  "projectname": "you-ok",
+  "condition": {},
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
 }

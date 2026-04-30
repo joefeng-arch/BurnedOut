@@ -1,0 +1,45 @@
+.result-page {
+  display: flex;
+  flex-direction: column;
+  padding-top: 100rpx;
+  padding-bottom: 60rpx;
+  min-height: 100vh;
+}
+
+.title-row { margin-bottom: 48rpx; }
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label { font-size: 28rpx; }
+.stat-value { font-size: 32rpx; font-weight: 600; }
+
+.quip {
+  margin-top: 48rpx;
+  padding: 32rpx;
+  font-size: 36rpx;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+}
+
+.cta-stack {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.back-row {
+  text-align: center;
+  margin-top: 40rpx;
+  padding: 20rpx;
+}

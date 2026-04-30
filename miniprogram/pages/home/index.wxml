@@ -1,0 +1,49 @@
+<view class="container home">
+  <view class="top">
+    <view class="hero fade-in">
+      <text class="app-brand">{{appName}}</text>
+      <text class="hero-q">{{t.home_question}}</text>
+      <text class="daily-phrase" wx:if="{{dailyPhrase}}">{{dailyPhrase}}</text>
+    </view>
+
+    <view class="logo-wrap fade-in">
+      <view class="logo-frame">
+        <image
+          class="logo-img"
+          src="/assets/logo.png"
+          mode="aspectFill"
+          lazy-load="{{false}}"></image>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom">
+    <view class="actions fade-in">
+      <button
+        class="btn btn-primary full-width"
+        bindtap="goVent"
+        hover-class="btn-hover">
+        {{t.home_vent_now}}
+      </button>
+      <button
+        class="btn btn-secondary full-width mt-24"
+        bindtap="goCheckin"
+        hover-class="btn-hover">
+        {{t.home_checkin}}
+      </button>
+    </view>
+
+    <view class="secondary-link" bindtap="goDashboard">
+      <text>{{t.home_see_trend}} →</text>
+    </view>
+
+    <view class="footer-note">
+      <text class="caption">{{t.home_privacy}}</text>
+      <view class="lang-switch">
+        <text class="lang {{locale === 'zh-CN' ? 'active' : ''}}" data-lang="zh-CN" bindtap="switchLang">中文</text>
+        <text class="lang-sep">·</text>
+        <text class="lang {{locale === 'en-GB' ? 'active' : ''}}" data-lang="en-GB" bindtap="switchLang">EN</text>
+      </view>
+    </view>
+  </view>
+</view>

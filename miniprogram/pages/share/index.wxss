@@ -1,0 +1,101 @@
+.share-page {
+  padding-top: 80rpx;
+  padding-bottom: 60rpx;
+  min-height: 100vh;
+}
+
+.title-row { margin-bottom: 40rpx; }
+
+.share-card {
+  background: linear-gradient(160deg, #1a0005 0%, #2a0008 50%, #0a0a0a 100%);
+  border: 2rpx solid rgba(255, 59, 48, 0.25);
+  border-radius: 32rpx;
+  padding: 48rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 40rpx;
+  margin-bottom: 48rpx;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-brand {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #ff3b30;
+}
+
+.card-week {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.card-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx 0;
+}
+
+.card-emoji {
+  font-size: 140rpx;
+  line-height: 1;
+}
+
+.card-level-label {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-stats {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.card-stat-value {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-stat-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.card-footer {
+  border-top: 2rpx solid rgba(255, 255, 255, 0.08);
+  padding-top: 24rpx;
+  text-align: center;
+}
+
+.card-caption {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.hidden-canvas {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+}
+
+.cta-stack {
+  display: flex;
+  flex-direction: column;
+}

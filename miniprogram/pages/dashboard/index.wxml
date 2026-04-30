@@ -1,0 +1,61 @@
+<view class="container dashboard-page">
+  <view class="title-row fade-in">
+    <text class="title">{{t.dashboard_title}}</text>
+    <text wx:if="{{streakLabel}}" class="body muted mt-16">{{streakLabel}}</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-row fade-in">
+    <text class="muted">...</text>
+  </view>
+
+  <block wx:else>
+    <!-- Weekly delta banner -->
+    <view wx:if="{{deltaLabel}}" class="delta-banner card fade-in">
+      <text class="body">{{deltaLabel}}</text>
+    </view>
+
+    <!-- 7-day trend -->
+    <view class="card fade-in mt-32">
+      <text class="subtitle">{{t.dashboard_7_day}}</text>
+      <view class="trend-bars mt-32">
+        <view
+          wx:for="{{trend}}"
+          wx:key="date"
+          class="trend-bar-col">
+          <view
+            class="trend-bar"
+            style="height: {{item.pct}}%; background: {{item.color}};"></view>
+          <text class="trend-day-label">{{item.dayShort}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Emotions -->
+    <view wx:if="{{emotions.length}}" class="card fade-in mt-32">
+      <text class="subtitle">{{t.dashboard_emotions}}</text>
+      <view class="chips mt-24">
+        <view
+          wx:for="{{emotions}}"
+          wx:key="tag"
+          class="chip">
+          {{item.label}} · {{item.count}}
+        </view>
+      </view>
+    </view>
+
+    <!-- Peak hour -->
+    <view wx:if="{{peakHourLabel}}" class="card fade-in mt-32">
+      <text class="subtitle">{{t.dashboard_peak_hour}}</text>
+      <text class="body mt-24">{{peakHourLabel}}</text>
+    </view>
+
+    <view class="cta-stack fade-in mt-48">
+      <button class="btn btn-secondary full-width" bindtap="goShare">
+        {{t.share_share}}
+      </button>
+      <button class="btn btn-ghost full-width mt-24" bindtap="goHistory">
+        {{t.history_title}}
+      </button>
+    </view>
+  </block>
+</view>

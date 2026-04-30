@@ -1,0 +1,41 @@
+.vent-page {
+  padding-top: 32rpx;
+  padding-bottom: 48rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-row,
+.emotion-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 24rpx;
+}
+
+.textarea {
+  margin-top: 16rpx;
+  min-height: 480rpx;
+  font-size: 34rpx;
+  line-height: 1.6;
+}
+
+.placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.char-count {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12rpx;
+}
+
+.warning {
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.cta-wrap {
+  margin-top: 40rpx;
+  display: flex;
+  flex-direction: column;
+}

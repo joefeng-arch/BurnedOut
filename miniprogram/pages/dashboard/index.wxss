@@ -1,0 +1,59 @@
+.dashboard-page {
+  padding-top: 80rpx;
+  padding-bottom: 60rpx;
+  min-height: 100vh;
+}
+
+.title-row { margin-bottom: 40rpx; }
+
+.loading-row {
+  padding: 120rpx 0;
+  text-align: center;
+}
+
+.delta-banner {
+  background-color: rgba(255, 59, 48, 0.12);
+  border: 2rpx solid rgba(255, 59, 48, 0.3);
+}
+
+/* Trend bars */
+.trend-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 240rpx;
+  gap: 12rpx;
+}
+
+.trend-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 12rpx;
+}
+
+.trend-bar {
+  width: 100%;
+  min-height: 8rpx;
+  border-radius: 8rpx 8rpx 0 0;
+  transition: height 400ms ease;
+}
+
+.trend-day-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.cta-stack {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,42 @@
+<view class="container history-page">
+  <view class="title-row fade-in">
+    <text class="title">{{t.history_title}}</text>
+  </view>
+
+  <view wx:if="{{loading && items.length === 0}}" class="loading-row fade-in">
+    <text class="muted">...</text>
+  </view>
+
+  <view wx:elif="{{items.length === 0}}" class="empty-state fade-in">
+    <text class="body muted">{{t.history_empty}}</text>
+  </view>
+
+  <view wx:else class="timeline fade-in">
+    <view
+      wx:for="{{items}}"
+      wx:key="id"
+      class="row card">
+      <view class="row-left">
+        <text class="row-emoji">{{item.emoji}}</text>
+      </view>
+      <view class="row-body">
+        <text class="row-date">{{item.dateLabel}}</text>
+        <text class="row-level">{{item.levelLabel}}</text>
+        <view wx:if="{{item.emotionLabels.length}}" class="row-emotions">
+          <text
+            wx:for="{{item.emotionLabels}}"
+            wx:for-item="tag"
+            wx:key="*this"
+            class="row-emotion-chip">{{tag}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{loadingMore}}" class="loading-row">
+      <text class="muted">...</text>
+    </view>
+    <view wx:elif="{{!hasMore && items.length > 0}}" class="loading-row">
+      <text class="caption muted">— end —</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,52 @@
+<view class="container share-page">
+  <view class="title-row fade-in">
+    <text class="title">{{t.share_title}}</text>
+  </view>
+
+  <!-- Visible preview card (HTML rendering) -->
+  <view class="share-card fade-in">
+    <view class="card-head">
+      <text class="card-brand">{{appName}}</text>
+      <text class="card-week">{{weekLabel}}</text>
+    </view>
+    <view class="card-big">
+      <text class="card-emoji">{{avgEmoji}}</text>
+      <text class="card-level-label">{{avgLevelLabel}}</text>
+    </view>
+    <view class="card-stats">
+      <view class="card-stat">
+        <text class="card-stat-value">{{streak}}</text>
+        <text class="card-stat-label">{{statLabels.streak}}</text>
+      </view>
+      <view class="card-stat">
+        <text class="card-stat-value">{{ventCount}}</text>
+        <text class="card-stat-label">{{statLabels.vents}}</text>
+      </view>
+      <view class="card-stat">
+        <text class="card-stat-value">{{topEmotion}}</text>
+        <text class="card-stat-label">{{statLabels.emotion}}</text>
+      </view>
+    </view>
+    <view class="card-footer">
+      <text class="card-caption">{{footerQuip}}</text>
+    </view>
+  </view>
+
+  <!-- Hidden canvas for image export -->
+  <canvas
+    canvas-id="shareCanvas"
+    class="hidden-canvas"
+    style="width: 600px; height: 800px;"></canvas>
+
+  <view class="cta-stack fade-in">
+    <button class="btn btn-primary full-width" bindtap="saveImage" disabled="{{busy}}">
+      {{t.share_save}}
+    </button>
+    <button
+      class="btn btn-secondary full-width mt-24"
+      open-type="share"
+      bindtap="onShareBtn">
+      {{t.share_share}}
+    </button>
+  </view>
+</view>

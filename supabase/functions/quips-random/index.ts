@@ -1,58 +1,30 @@
-import { createAdminClient } from "../_shared/supabase.ts";
-import {
-  handleCors,
-  jsonResponse,
-  errorResponse,
-} from "../_shared/cors.ts";
+// GET /quips-random?locale=zh-CN&mode=gentle&high_risk=false
+// Returns a single random quip.
+// Used by client to fetch loading-state messages or fallback copy.
 
-const VALID_LOCALES = ["zh-CN", "en-GB"];
+import { createAdminClient } from "../_shared/supabase.ts";
+import { handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
 
   if (req.method !== "GET") {
-    return errorResponse("METHOD_NOT_ALLOWED", "Only GET is allowed", 405);
+    return errorResponse("method_not_allowed", "GET only", 405);
   }
 
-  try {
-    const url = new URL(req.url);
-    const locale = url.searchParams.get("locale") || "zh-CN";
+  const url = new URL(req.url);
+  const locale = (url.searchParams.get("locale") ?? "zh-CN") as "zh-CN" | "en-GB";
+  const mode = (url.searchParams.get("mode") ?? "gentle") as "savage" | "gentle" | "calm";
+  const highRisk = url.searchParams.get("high_risk") === "true";
 
-    if (!VALID_LOCALES.includes(locale)) {
-      return errorResponse(
-        "VALIDATION_ERROR",
-        `locale must be one of: ${VALID_LOCALES.join(", ")}`,
-        422,
-      );
-    }
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.rpc("get_random_quip", {
+    p_locale: locale,
+    p_mode: mode,
+    p_is_high_risk: highRisk,
+  });
 
-    const supabase = createAdminClient();
-
-    const { data, error } = await supabase.rpc("get_random_quip", {
-      target_locale: locale,
-    });
-
-    if (error) {
-      console.error("get_random_quip error:", error);
-      return errorResponse(
-        "INTERNAL_ERROR",
-        "Failed to fetch quip",
-        500,
-      );
-    }
-
-    if (!data) {
-      return errorResponse(
-        "NOT_FOUND",
-        `No quips available for locale: ${locale}`,
-        404,
-      );
-    }
-
-    return jsonResponse(data);
-  } catch (err) {
-    console.error("quips-random error:", err);
-    return errorResponse("INTERNAL_ERROR", "Internal server error", 500);
-  }
+  if (error) return errorResponse("internal", error.message, 500);
+  return jsonResponse({ quip: data ?? "" });
 });
