@@ -160,6 +160,18 @@ Page({
         egg, // {key, zh, en, emoji} | null
       };
 
+      // In-memory-only payload for the AI empathy opt-in on the result page.
+      // - Lives only on this Page instance's app.globalData (RAM, never disk).
+      // - 5 min TTL so it doesn't linger if the user backgrounds the app.
+      // - Cleared eagerly by result page's onUnload + after a successful AI call.
+      // This keeps the home-page privacy promise ("发泄原文不入库") intact.
+      app.globalData.aiPayload = {
+        text,
+        emotion_tags: tags,
+        vent_mode: selectedMode,
+        expires_at: Date.now() + 5 * 60 * 1000,
+      };
+
       const eggParam = egg ? '&egg=' + egg.key : '';
       wx.redirectTo({
         url: '/pages/destroy/index?type=' + destroyType + eggParam,

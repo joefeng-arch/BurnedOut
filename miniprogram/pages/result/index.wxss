@@ -43,3 +43,79 @@
   margin-top: 40rpx;
   padding: 20rpx;
 }
+
+/* ─── AI empathy card ────────────────────────────────────────────────────
+   Sits between the quip and the CTA stack. Soft teal-tinted glass card that
+   reads as a "warm voice" affordance — distinct from the action buttons
+   below (which are about navigation, not response). */
+.ai-card {
+  margin-top: 32rpx;
+  padding: 28rpx 28rpx 24rpx;
+  border-radius: 24rpx;
+  background: rgba(76, 200, 180, 0.08);
+  border: 1rpx solid rgba(76, 200, 180, 0.18);
+}
+
+.ai-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+.ai-icon { font-size: 48rpx; }
+.ai-cta-text {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5rpx;
+}
+.ai-btn {
+  margin-top: 8rpx;
+  padding: 16rpx 36rpx;
+  border-radius: 999rpx;
+  background: rgba(76, 200, 180, 0.18);
+  border: 2rpx solid rgba(76, 200, 180, 0.45);
+  color: #6fdcc6;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.ai-quota {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.ai-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 12rpx 0;
+}
+.ai-loading-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
+.ai-icon.spin { animation: aiPulse 1.4s ease-in-out infinite; }
+@keyframes aiPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.ai-done { display: flex; flex-direction: column; gap: 16rpx; }
+.ai-done-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.ai-done-label {
+  font-size: 24rpx;
+  color: rgba(76, 200, 180, 0.8);
+  letter-spacing: 1rpx;
+  text-transform: uppercase;
+}
+.ai-response-text {
+  font-size: 30rpx;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.92);
+}

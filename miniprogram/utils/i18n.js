@@ -10,7 +10,7 @@ const strings = {
     home_vent_now: '马上发泄',
     home_checkin: '今日打卡',
     home_see_trend: '看看最近状态',
-    home_privacy: '匿名使用，不保存发泄原文',
+    home_privacy: '匿名使用，发泄原文不入库；AI 共情功能需手动触发',
 
     checkin_title: '今日打卡',
     checkin_subtitle: '选一下你现在的电量',
@@ -94,6 +94,20 @@ const strings = {
     smash_milestone_10: '热身完毕',
     smash_milestone_50: '店家要破产了',
     smash_milestone_100: '你今天可以了',
+
+    // AI empathy (opt-in on result page)
+    ai_empathy_cta: '想听一句安慰？',
+    ai_empathy_button: '🫂 让 AI 听一下',
+    ai_empathy_label: 'AI 的回应',
+    ai_empathy_loading: 'AI 正在听你说话…',
+    ai_empathy_confirm_title: '把这段发泄发给 AI？',
+    ai_empathy_confirm_body: '会把你刚才的发泄送到 AI 一次，听完即焚，我们不保存也不再发出去。',
+    ai_empathy_confirm_ok: '同意，听一下',
+    ai_empathy_confirm_cancel: '算了',
+    ai_empathy_limit: '今天 AI 共情已用完',
+    ai_empathy_expired: '内容已超时清除，下次发泄完立即点',
+    ai_empathy_error: '哦豁，AI 这会儿没听见',
+    ai_empathy_not_configured: 'AI 共情暂未开放',
   },
   'en-GB': {
     app_name: 'You OK?',
@@ -102,7 +116,7 @@ const strings = {
     home_vent_now: 'Vent now',
     home_checkin: 'Check in',
     home_see_trend: 'See my trend',
-    home_privacy: 'Anonymous. We never store what you type.',
+    home_privacy: 'Anonymous. We never store vents. AI empathy is opt-in only.',
 
     checkin_title: 'Daily Check-in',
     checkin_subtitle: 'How charged are you today?',
@@ -178,6 +192,20 @@ const strings = {
     smash_milestone_10: 'Warmed up',
     smash_milestone_50: 'The shop is going bankrupt',
     smash_milestone_100: 'You did good today',
+
+    // AI empathy (opt-in on result page)
+    ai_empathy_cta: 'Want a kind word?',
+    ai_empathy_button: '🫂 Let AI listen',
+    ai_empathy_label: 'AI says',
+    ai_empathy_loading: 'AI is listening…',
+    ai_empathy_confirm_title: 'Send this vent to AI?',
+    ai_empathy_confirm_body: 'Your vent will be sent to AI once. We never save it or send it anywhere else.',
+    ai_empathy_confirm_ok: 'OK, send it',
+    ai_empathy_confirm_cancel: 'Never mind',
+    ai_empathy_limit: 'No AI empathy left today',
+    ai_empathy_expired: 'Expired. Tap right after venting next time.',
+    ai_empathy_error: 'AI did not hear you this time',
+    ai_empathy_not_configured: 'AI empathy unavailable',
   },
 };
 

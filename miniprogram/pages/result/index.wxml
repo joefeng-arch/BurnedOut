@@ -18,6 +18,31 @@
     <text>{{quip}}</text>
   </view>
 
+  <!-- AI empathy opt-in card. Three states: idle (CTA), loading, done.
+       Only visible when the in-memory vent payload is still fresh and the
+       user has daily quota left. -->
+  <view class="ai-card fade-in" wx:if="{{aiAvailable}}">
+    <view class="ai-idle" wx:if="{{aiState === 'idle'}}">
+      <text class="ai-icon">🫂</text>
+      <text class="ai-cta-text">{{t.ai_empathy_cta}}</text>
+      <view class="ai-btn" bindtap="requestEmpathy" hover-class="btn-hover">
+        <text>{{t.ai_empathy_button}}</text>
+      </view>
+      <text class="ai-quota">{{aiQuotaText}}</text>
+    </view>
+    <view class="ai-loading" wx:elif="{{aiState === 'loading'}}">
+      <text class="ai-icon spin">🫂</text>
+      <text class="ai-loading-text">{{t.ai_empathy_loading}}</text>
+    </view>
+    <view class="ai-done" wx:elif="{{aiState === 'done'}}">
+      <view class="ai-done-head">
+        <text class="ai-icon">🫂</text>
+        <text class="ai-done-label">{{t.ai_empathy_label}}</text>
+      </view>
+      <text class="ai-response-text">{{aiResponse}}</text>
+    </view>
+  </view>
+
   <view class="cta-stack fade-in">
     <button class="btn btn-primary full-width" bindtap="retry">{{t.result_retry}}</button>
     <button class="btn btn-secondary full-width mt-24" bindtap="goSmash">🍽️ {{t.result_smash}}</button>

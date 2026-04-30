@@ -87,6 +87,11 @@ const api = {
     request({ path: '/analytics-events', method: 'POST', data: { events } }),
   trackAdEvents: (events) =>
     request({ path: '/ad-events', method: 'POST', data: { events } }),
+
+  // AI empathy — opt-in, sends vent text to bltcy.ai relay via our edge fn.
+  // Bigger timeout because LLM round-trip is multi-second.
+  requestAiEmpathy: (body) =>
+    request({ path: '/ai-empathy', method: 'POST', data: body, timeout: 12000 }),
 };
 
 module.exports = { request, api };
