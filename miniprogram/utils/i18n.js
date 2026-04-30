@@ -58,7 +58,7 @@ const strings = {
     result_title: '搞定了',
     result_retry: '再来一轮',
     result_dashboard: '看看我最近有多废',
-    result_unlock: '解锁高级结果（广告）',
+    result_smash: '摔几个盘子',
     result_back_home: '回首页',
 
     // Dashboard
@@ -145,7 +145,7 @@ const strings = {
     result_title: 'All done',
     result_retry: 'Go again',
     result_dashboard: 'See my trend',
-    result_unlock: 'Unlock premium (ad)',
+    result_smash: 'Smash some plates',
     result_back_home: 'Back',
 
     dashboard_title: 'Recent State',

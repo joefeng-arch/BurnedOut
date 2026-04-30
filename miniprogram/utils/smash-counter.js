@@ -8,10 +8,10 @@
 // pipeline at session-end via track('smash_session_end', { count }).
 //
 // Quotas:
-//   - 30 free smashes per day
-//   - +20 per reward-video unlock
+//   - 10 free smashes per day  (was 30 — too generous, never triggered ad path)
+//   - +10 per reward-video unlock  (was 20)
 //   - max 3 ad unlocks per day
-//   - hard cap = 30 + 20*3 = 90 plates/day
+//   - hard cap = 10 + 10*3 = 40 plates/day
 //
 // Storage shape:
 //   smash_daily = { date: 'YYYY-MM-DD', smashed: 0, ad_unlocks: 0 }
@@ -22,8 +22,8 @@ const storage = require('./storage.js');
 const KEY_DAILY = 'smash_daily';
 const KEY_RECORD = 'smash_record';
 
-const FREE_LIMIT = 30;
-const PER_UNLOCK = 20;
+const FREE_LIMIT = 10;
+const PER_UNLOCK = 10;
 const MAX_UNLOCKS = 3;
 
 function todayStr() {

@@ -1,7 +1,6 @@
 const i18n = require('../../utils/i18n.js');
 const analytics = require('../../utils/analytics.js');
 const ads = require('../../utils/ads.js');
-const { AD_UNLOCK_TYPES } = require('../../utils/constants.js');
 
 function charLabel(bucket, locale) {
   const map = {
@@ -35,7 +34,7 @@ Page({
         result_title: i18n.t('result_title'),
         result_retry: i18n.t('result_retry'),
         result_dashboard: i18n.t('result_dashboard'),
-        result_unlock: i18n.t('result_unlock'),
+        result_smash: i18n.t('result_smash'),
         result_back_home: i18n.t('result_back_home'),
       },
       statsLabels: {
@@ -70,23 +69,12 @@ Page({
     wx.redirectTo({ url: '/pages/dashboard/index' });
   },
 
-  async unlockPremium() {
-    analytics.events.click('result_click_reward_unlock', {
-      unlock_type: AD_UNLOCK_TYPES.ADVANCED_DESTROY,
-    });
-    const { completed, reason } = await ads.showRewardVideo({
-      unlock_type: AD_UNLOCK_TYPES.ADVANCED_DESTROY,
-      page_name: 'result',
-    });
-    if (completed) {
-      wx.showToast({ title: i18n.getLocale() === 'zh-CN' ? '已解锁' : 'Unlocked', icon: 'success' });
-      analytics.track('result_unlock_success', { unlock_type: AD_UNLOCK_TYPES.ADVANCED_DESTROY });
-    } else if (reason === 'not_configured' || reason === 'api_unavailable') {
-      wx.showToast({
-        title: i18n.getLocale() === 'zh-CN' ? '广告暂不可用' : 'Ads unavailable',
-        icon: 'none',
-      });
-    }
+  // Second smash entry point — we already exposed it on the home page; the
+  // moment right after a vent is the highest-intent moment for a "go smash
+  // some plates to keep venting physically" CTA.
+  goSmash() {
+    analytics.events.click('result_click_smash');
+    wx.redirectTo({ url: '/pages/smash/index' });
   },
 
   async backHome() {

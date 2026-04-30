@@ -20,8 +20,8 @@
 
   <view class="cta-stack fade-in">
     <button class="btn btn-primary full-width" bindtap="retry">{{t.result_retry}}</button>
-    <button class="btn btn-secondary full-width mt-24" bindtap="goDashboard">{{t.result_dashboard}}</button>
-    <button class="btn btn-ghost full-width mt-24" bindtap="unlockPremium">{{t.result_unlock}}</button>
+    <button class="btn btn-secondary full-width mt-24" bindtap="goSmash">🍽️ {{t.result_smash}}</button>
+    <button class="btn btn-ghost full-width mt-24" bindtap="goDashboard">{{t.result_dashboard}}</button>
   </view>
 
   <view class="back-row" bindtap="backHome">

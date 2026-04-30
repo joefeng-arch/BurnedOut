@@ -61,23 +61,25 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 40rpx;
-  min-height: 440rpx;
+  padding-top: 28rpx;
+  min-height: 360rpx;
 }
 
 /* Frame wraps the image and clips it. The image inside is intentionally
    oversized (110%) and shifted up-left by 5% so the white margins of the
-   source PNG fall outside the visible area and get cut. */
+   source PNG fall outside the visible area and get cut.
+   Sized down from 440 → 340 to relieve cramping after we added the daily
+   phrase + smash-link tile to the home page. */
 .logo-frame {
-  width: 440rpx;
-  height: 440rpx;
-  border-radius: 72rpx;
+  width: 340rpx;
+  height: 340rpx;
+  border-radius: 56rpx;
   overflow: hidden;
   position: relative;
   background-color: #3fb892; /* fallback while image loads */
   box-shadow:
-    0 0 100rpx rgba(76, 200, 180, 0.22),
-    0 24rpx 48rpx rgba(0, 0, 0, 0.4);
+    0 0 80rpx rgba(76, 200, 180, 0.22),
+    0 20rpx 40rpx rgba(0, 0, 0, 0.4);
   animation: logoFloat 4s ease-in-out infinite;
 }
 
