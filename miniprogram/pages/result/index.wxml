@@ -20,12 +20,21 @@
 
   <!-- AI empathy opt-in card. Three states: idle (CTA), loading, done.
        Only visible when the in-memory vent payload is still fresh and the
-       user has daily quota left. -->
+       user has daily quota left.
+       The idle wrapper itself is the tap target (not the inner button view) —
+       previous nested-bindtap setup occasionally swallowed taps on certain
+       WeChat versions. Whole-card tap is also better UX: the user doesn't
+       have to aim for a small pill. -->
   <view class="ai-card fade-in" wx:if="{{aiAvailable}}">
-    <view class="ai-idle" wx:if="{{aiState === 'idle'}}">
+    <view
+      class="ai-idle"
+      wx:if="{{aiState === 'idle'}}"
+      bindtap="requestEmpathy"
+      hover-class="ai-idle-hover"
+      hover-stay-time="80">
       <text class="ai-icon">🫂</text>
       <text class="ai-cta-text">{{t.ai_empathy_cta}}</text>
-      <view class="ai-btn" bindtap="requestEmpathy" hover-class="btn-hover">
+      <view class="ai-btn">
         <text>{{t.ai_empathy_button}}</text>
       </view>
       <text class="ai-quota">{{aiQuotaText}}</text>

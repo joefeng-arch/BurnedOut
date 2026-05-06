@@ -95,19 +95,20 @@ const strings = {
     smash_milestone_50: '店家要破产了',
     smash_milestone_100: '你今天可以了',
 
-    // AI empathy (opt-in on result page)
+    // AI empathy (opt-in on result page) — copy avoids the word "AI" in
+    // user-facing strings. Treats the model as "TA" (a gentle other).
     ai_empathy_cta: '想听一句安慰？',
-    ai_empathy_button: '🫂 让 AI 听一下',
-    ai_empathy_label: 'AI 的回应',
-    ai_empathy_loading: 'AI 正在听你说话…',
-    ai_empathy_confirm_title: '把这段发泄发给 AI？',
-    ai_empathy_confirm_body: '会把你刚才的发泄送到 AI 一次，听完即焚，我们不保存也不再发出去。',
-    ai_empathy_confirm_ok: '同意，听一下',
+    ai_empathy_button: '🫂 来一句温柔',
+    ai_empathy_label: 'TA 说',
+    ai_empathy_loading: 'TA 正在听你说话…',
+    ai_empathy_confirm_title: '想被听见吗？',
+    ai_empathy_confirm_body: '会把你刚才的发泄送出去一次，由一个温柔的声音回应你。听完即焚，我们不保存也不会再发出去。',
+    ai_empathy_confirm_ok: '好，听一下',
     ai_empathy_confirm_cancel: '算了',
-    ai_empathy_limit: '今天 AI 共情已用完',
+    ai_empathy_limit: '今天的温柔额度用完啦',
     ai_empathy_expired: '内容已超时清除，下次发泄完立即点',
-    ai_empathy_error: '哦豁，AI 这会儿没听见',
-    ai_empathy_not_configured: 'AI 共情暂未开放',
+    ai_empathy_error: '哦豁，TA 这会儿没听见',
+    ai_empathy_not_configured: '这功能暂未开放',
   },
   'en-GB': {
     app_name: 'You OK?',
@@ -193,19 +194,20 @@ const strings = {
     smash_milestone_50: 'The shop is going bankrupt',
     smash_milestone_100: 'You did good today',
 
-    // AI empathy (opt-in on result page)
+    // AI empathy (opt-in on result page) — soft tone; avoid technical "AI"
+    // wording where possible.
     ai_empathy_cta: 'Want a kind word?',
-    ai_empathy_button: '🫂 Let AI listen',
-    ai_empathy_label: 'AI says',
-    ai_empathy_loading: 'AI is listening…',
-    ai_empathy_confirm_title: 'Send this vent to AI?',
-    ai_empathy_confirm_body: 'Your vent will be sent to AI once. We never save it or send it anywhere else.',
-    ai_empathy_confirm_ok: 'OK, send it',
+    ai_empathy_button: '🫂 Hear a kind word',
+    ai_empathy_label: 'Reply',
+    ai_empathy_loading: 'Listening to you…',
+    ai_empathy_confirm_title: 'Want to be heard?',
+    ai_empathy_confirm_body: 'Your vent will be sent once to a gentle voice that replies to you. Heard and burned — we never save or forward it.',
+    ai_empathy_confirm_ok: 'Yes, please',
     ai_empathy_confirm_cancel: 'Never mind',
-    ai_empathy_limit: 'No AI empathy left today',
+    ai_empathy_limit: 'Out of kind words today',
     ai_empathy_expired: 'Expired. Tap right after venting next time.',
-    ai_empathy_error: 'AI did not hear you this time',
-    ai_empathy_not_configured: 'AI empathy unavailable',
+    ai_empathy_error: 'Not heard this time',
+    ai_empathy_not_configured: 'Feature unavailable',
   },
 };
 

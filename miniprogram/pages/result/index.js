@@ -123,6 +123,9 @@ Page({
   // ─── AI empathy opt-in flow ──────────────────────────────────────────────
 
   async requestEmpathy() {
+    // Diagnostic log — if user reports "click does nothing" again, this
+    // line tells us whether the tap fired at all (vs. e.g. modal blocked).
+    console.log('[ai-empathy] tap fired');
     const aiPayload = (getApp().globalData.aiPayload) || null;
     const locale = i18n.getLocale();
 

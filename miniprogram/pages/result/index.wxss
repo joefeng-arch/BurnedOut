@@ -61,7 +61,10 @@
   flex-direction: column;
   align-items: center;
   gap: 12rpx;
+  /* Whole-card tap target — the inner pill is just a visual marker. */
+  padding: 4rpx 0;
 }
+.ai-idle-hover { opacity: 0.75; }
 .ai-icon { font-size: 48rpx; }
 .ai-cta-text {
   font-size: 28rpx;
