@@ -57,7 +57,9 @@ const MODEL = "deepseek-v4-flash";
 // input; cap aggressively. 500 chars covers ~99% of normal vents.
 const MAX_INPUT_CHARS = 500;
 const MAX_OUTPUT_TOKENS = 120;
-const UPSTREAM_TIMEOUT_MS = 8000;
+// 15s — DeepSeek cold-start + bltcy.ai relay overhead can easily exceed 8s.
+// Supabase Edge Functions default request timeout is 60s so we have headroom.
+const UPSTREAM_TIMEOUT_MS = 15000;
 
 const SYSTEM_PROMPT_ZH = `你是一个温暖但不油腻的朋友。用户刚刚发泄了情绪,你要做的是:
 - 共情他/她,不评价不教育
@@ -145,11 +147,15 @@ Deno.serve(async (req) => {
       const errBody = await upstream.text().catch(() => "");
       // Log status + a short snippet only — do NOT log the user's vent text
       console.error("bltcy upstream error", upstream.status, errBody.slice(0, 200));
-      return errorResponse(
-        "upstream_error",
-        `AI request failed: ${upstream.status}`,
-        502,
-      );
+      // Echo upstream status + body snippet back to caller for debug visibility.
+      // Safe to expose: contains bltcy's error JSON (e.g. "model not found"),
+      // never the user's vent text.
+      return jsonResponse({
+        error: "upstream_error",
+        message: `AI request failed: ${upstream.status}`,
+        upstream_status: upstream.status,
+        upstream_body: errBody.slice(0, 200),
+      }, 502);
     }
 
     const data = await upstream.json();
@@ -163,8 +169,18 @@ Deno.serve(async (req) => {
       usage: data.usage ?? null,
     });
   } catch (err) {
+    const name = (err as Error)?.name ?? "Error";
     // Do not leak err.message containing user input; just log generically
-    console.error("ai-empathy fetch failed", (err as Error)?.name);
-    return errorResponse("internal", "Upstream call failed", 500);
+    console.error("ai-empathy fetch failed", name);
+    // AbortError = our 15s timeout fired. Surface this distinctly so the
+    // client can suggest "try again, the model is slow" vs. a real bug.
+    const isTimeout = name === "TimeoutError" || name === "AbortError";
+    return jsonResponse({
+      error: isTimeout ? "upstream_timeout" : "internal",
+      message: isTimeout
+        ? `Upstream did not respond in ${UPSTREAM_TIMEOUT_MS}ms`
+        : "Upstream call failed",
+      error_name: name,
+    }, isTimeout ? 504 : 500);
   }
 });

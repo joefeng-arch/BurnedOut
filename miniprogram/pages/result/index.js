@@ -194,7 +194,17 @@ Page({
         usage_completion_tokens: res.usage?.completion_tokens,
       });
     } catch (err) {
-      console.warn('ai empathy failed', err);
+      // Log the full server-supplied detail so we can read the upstream
+      // status/body straight from WeChat dev tool Console without having to
+      // dig through Supabase logs every time.
+      console.warn('[ai-empathy] failed:', {
+        status: err.status,
+        error: err.body?.error,
+        message: err.body?.message,
+        upstream_status: err.body?.upstream_status,
+        upstream_body: err.body?.upstream_body,
+        error_name: err.body?.error_name,
+      });
       this.setData({ aiState: 'idle' });
       const msgKey = err.body?.error === 'not_configured'
         ? 'ai_empathy_not_configured'
@@ -203,6 +213,7 @@ Page({
       analytics.track('ai_empathy_failed', {
         error_code: err.body?.error || 'network',
         status: err.status,
+        upstream_status: err.body?.upstream_status,
       });
     }
   },
