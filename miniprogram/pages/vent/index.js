@@ -193,7 +193,7 @@ Page({
       title: i18n.t('vent_limit_reached'),
       content: i18n.t('vent_unlock_via_ad'),
       confirmText: 'OK',
-      cancelText: 'Cancel',
+      cancelText: 'Nah',  // 'Cancel' (6 chars) silently breaks wx.showModal
       success: async (r) => {
         if (!r.confirm) return;
         const { completed, reason } = await ads.showRewardVideo({

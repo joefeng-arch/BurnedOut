@@ -213,7 +213,8 @@ Page({
             wx.showModal({
               title: i18n.getLocale() === 'zh-CN' ? '需要相册权限' : 'Album permission needed',
               content: i18n.getLocale() === 'zh-CN' ? '请在设置中开启相册权限' : 'Please enable album permission in Settings',
-              confirmText: i18n.getLocale() === 'zh-CN' ? '去设置' : 'Open Settings',
+              // wx.showModal caps confirmText at 4 chars or it silently fails.
+              confirmText: i18n.getLocale() === 'zh-CN' ? '去设置' : 'Open',
               success: (r) => {
                 if (r.confirm) wx.openSetting();
               },

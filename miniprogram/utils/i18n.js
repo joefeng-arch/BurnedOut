@@ -103,7 +103,9 @@ const strings = {
     ai_empathy_loading: 'TA 正在听你说话…',
     ai_empathy_confirm_title: '想被听见吗？',
     ai_empathy_confirm_body: '会把你刚才的发泄送出去一次，由一个温柔的声音回应你。听完即焚，我们不保存也不会再发出去。',
-    ai_empathy_confirm_ok: '好，听一下',
+    // wx.showModal hard-caps confirmText/cancelText at 4 characters and
+    // SILENTLY fails (modal never appears) when exceeded — keep these short.
+    ai_empathy_confirm_ok: '听一下',
     ai_empathy_confirm_cancel: '算了',
     ai_empathy_limit: '今天的温柔额度用完啦',
     ai_empathy_expired: '内容已超时清除，下次发泄完立即点',
@@ -202,8 +204,9 @@ const strings = {
     ai_empathy_loading: 'Listening to you…',
     ai_empathy_confirm_title: 'Want to be heard?',
     ai_empathy_confirm_body: 'Your vent will be sent once to a gentle voice that replies to you. Heard and burned — we never save or forward it.',
-    ai_empathy_confirm_ok: 'Yes, please',
-    ai_empathy_confirm_cancel: 'Never mind',
+    // 4-char wx.showModal limit — see zh-CN comment.
+    ai_empathy_confirm_ok: 'Sure',
+    ai_empathy_confirm_cancel: 'Nah',
     ai_empathy_limit: 'Out of kind words today',
     ai_empathy_expired: 'Expired. Tap right after venting next time.',
     ai_empathy_error: 'Not heard this time',
