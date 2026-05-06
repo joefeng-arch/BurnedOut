@@ -159,9 +159,28 @@ Deno.serve(async (req) => {
     }
 
     const data = await upstream.json();
-    const empathy: string = data?.choices?.[0]?.message?.content?.trim() ?? "";
+    // Try standard OpenAI shape first, then DeepSeek-R1 / reasoning-model
+    // shape (content lives in reasoning_content), then a couple of relay
+    // service variants we've seen in the wild.
+    const empathy: string = (
+      data?.choices?.[0]?.message?.content
+      ?? data?.choices?.[0]?.message?.reasoning_content
+      ?? data?.choices?.[0]?.text
+      ?? data?.content
+      ?? ""
+    ).toString().trim();
+
     if (!empathy) {
-      return errorResponse("empty_response", "AI returned empty content", 502);
+      // Surface the actual response shape so we can adapt parsing without
+      // another round-trip. Capped at 800 chars so we don't blow up the
+      // toast/console with a giant payload.
+      const rawSnippet = JSON.stringify(data ?? {}).slice(0, 800);
+      console.error("ai-empathy empty content. Raw upstream response:", rawSnippet);
+      return jsonResponse({
+        error: "empty_response",
+        message: "AI returned empty content",
+        raw_response: rawSnippet,
+      }, 502);
     }
 
     return jsonResponse({

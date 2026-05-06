@@ -203,6 +203,7 @@ Page({
         message: err.body?.message,
         upstream_status: err.body?.upstream_status,
         upstream_body: err.body?.upstream_body,
+        raw_response: err.body?.raw_response,
         error_name: err.body?.error_name,
       });
       this.setData({ aiState: 'idle' });
