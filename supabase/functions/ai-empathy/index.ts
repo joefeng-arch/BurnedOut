@@ -18,8 +18,37 @@
 //
 // Required Supabase secret:
 //   BLTCY_API_KEY  — Bearer token for api.bltcy.ai
+//
+// CORS helpers are intentionally inlined (not imported from ../_shared) so
+// this function can be deployed via the Supabase Dashboard web editor, which
+// only uploads the single file you paste — it does NOT bundle the _shared
+// directory the way the CLI does. Keeping this file dependency-free means
+// "Deploy a new function" → paste → done, no CLI needed.
 
-import { handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-device-id",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
+};
+
+function handleCors(req: Request): Response | null {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  return null;
+}
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function errorResponse(error: string, message: string, status = 400): Response {
+  return jsonResponse({ error, message }, status);
+}
 
 const BLTCY_URL = "https://api.bltcy.ai/v1/chat/completions";
 const MODEL = "deepseek-v4-flash";
